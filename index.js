@@ -1,15 +1,16 @@
 /*
  * Importing modules
  */
-const { TwitterApi: X_API } = require("twitter-api-v2");
+const fs = require("fs");
 const OpenAI = require("openai");
+const { TwitterApi: X_API } = require("twitter-api-v2");
 
 /*
  * Meta values defined as constants
  */
 const X_TOKEN = process.env.X_API_KEY;
 const AI_API_KEY = process.env.AI_API_KEY;
-const PROMPT = `hi`;
+const PROMPT = fs.readFileSync("./prompt.md", "utf-8");
 
 /**
  * Creating new API Client to acesss AI
@@ -45,6 +46,17 @@ const postMessage = async (content) => {
  * Fetched post content with llm
  */
 const getPostContent = async () => {
+  /**
+   * If by any chance
+   */
+  if (!PROMPT) {
+    console.log("[FILESYSTEM] Isn't able to read prompt from markdown file!");
+    return "";
+  }
+
+  /**
+   * Fetching completion
+   */
   const chatCompletion = await AI_CLIENT.chat.completions.create({
     messages: [{ role: "user", content: PROMPT }],
     model: "mixtral-8x7b",
