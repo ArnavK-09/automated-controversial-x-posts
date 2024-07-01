@@ -10,6 +10,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "openai": "^4.52.2",
     "twitter-api-v2": "^1.17.1"
   }
 }
