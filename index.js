@@ -1,16 +1,25 @@
 /*
  * Importing modules
  */
-const fs = require("fs");
-const OpenAI = require("openai");
-const { TwitterApi: X_API } = require("twitter-api-v2");
+import fs from "fs";
+import OpenAI from "openai";
 
 /*
  * Meta values defined as constants
  */
-const X_TOKEN = process.env.X_API_KEY;
-const AI_API_KEY = process.env.AI_API_KEY;
 const PROMPT = fs.readFileSync("./prompt.md", "utf-8");
+const AI_MODEL = "gemma-7b";
+const AI_API_KEY = process.env.AI_API_KEY;
+const OAUTH_HEADER = process.env.OAUTH_HEADER;
+
+/**
+ * If by any chance anything missing
+ */
+if (!PROMPT || !AI_API_KEY || !OAUTH_HEADER || !AI_MODEL) {
+  console.log("[MISSING] Compulsary meta variables are missing!");
+  console.log(`Status:-\n\tPROMPT:- ${!!PROMPT}\n\tAI_MODEL:- ${!!AI_MODEL}\n\tAI_API_KEY:- ${!!AI_API_KEY}\n\tOAUTH_HEADER:- ${!!OAUTH_HEADER}`)
+  process.exit(1)
+}
 
 /**
  * Creating new API Client to acesss AI
@@ -21,45 +30,48 @@ const AI_CLIENT = new OpenAI({
 });
 console.log("[CLIENT] New AI client initiated with specified token.");
 
-/*
- * New X client initialize
- */
-const X_CLIENT = new X_API(X_TOKEN);
-console.log("[CLIENT] New X client initiated with specified token.");
-
-/*
- * Usable api client
- */
-const X_CLIENT_READONLY = X_CLIENT.readOnly;
 
 /*
  * Method to post message
  */
 const postMessage = async (content) => {
-  await X_CLIENT_READONLY.v2.tweet(content.toString().trim());
-  console.log(
-    `[NEW MESSAGE] New message posted from X Account with content \` ${content.toString().trim()}\` at time ${new Date()}.`,
-  );
+  // Organizing Headers 
+  const myHeaders = new Headers();
+  myHeaders.append("Content-Type", "application/json");
+  myHeaders.append("Authorization", OAUTH_HEADER);
+
+  // Request Body 
+  const requestOptions = {
+    method: "POST",
+    headers: myHeaders,
+    body: JSON.stringify({
+      "text": content.toString()
+    }),
+    redirect: "follow"
+  };
+
+  // Posting Data 
+  fetch("https://api.twitter.com/2/tweets", requestOptions)
+    .then((response) => response.text())
+    .then((e) => console.log(
+      `[POST] Result during executing "postMessage" func:-\n ${e}`,
+    ),)
+    .catch((e) => console.log(
+      `[ERROR] An error occured during executing "postMessage" func:-\n ${e}`,
+    ));
 };
 
 /**
  * Fetched post content with llm
  */
 const getPostContent = async () => {
-  /**
-   * If by any chance
-   */
-  if (!PROMPT) {
-    console.log("[FILESYSTEM] Isn't able to read prompt from markdown file!");
-    return "";
-  }
 
   /**
    * Fetching completion
    */
   const chatCompletion = await AI_CLIENT.chat.completions.create({
     messages: [{ role: "user", content: PROMPT }],
-    model: "mixtral-8x7b",
+    model: AI_MODEL,
   });
   const content = chatCompletion.choices[0]?.message?.content ?? "";
   console.log(
@@ -91,7 +103,7 @@ const getPostContent = async () => {
    */
   await postMessage(contentToBePosted).catch((e) =>
     console.log(
-      `[ERROR] An error occured during executing "postMessage" method:-\n ${e.message}`,
+      `[ERROR] An error occured during executing "postMessage" func:-\n ${e}`,
     ),
   );
 })();

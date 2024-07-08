@@ -1,16 +1,16 @@
 {
-  "name": "fun-tweet-bot",
+  "name": "tweeter-bot",
   "version": "0.0.1",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "ArnavK-09",
-  "license": "ISC",
+  "license": "MIT",
   "description": "",
   "dependencies": {
-    "openai": "^4.52.2",
-    "twitter-api-v2": "^1.17.1"
+    "openai": "^4.52.2"
   }
 }
