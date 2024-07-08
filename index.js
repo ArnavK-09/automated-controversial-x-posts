@@ -17,8 +17,10 @@ const OAUTH_HEADER = process.env.OAUTH_HEADER;
  */
 if (!PROMPT || !AI_API_KEY || !OAUTH_HEADER || !AI_MODEL) {
   console.log("[MISSING] Compulsary meta variables are missing!");
-  console.log(`Status:-\n\tPROMPT:- ${!!PROMPT}\n\tAI_MODEL:- ${!!AI_MODEL}\n\tAI_API_KEY:- ${!!AI_API_KEY}\n\tOAUTH_HEADER:- ${!!OAUTH_HEADER}`)
-  process.exit(1)
+  console.log(
+    `Status:-\n\tPROMPT:- ${!!PROMPT}\n\tAI_MODEL:- ${!!AI_MODEL}\n\tAI_API_KEY:- ${!!AI_API_KEY}\n\tOAUTH_HEADER:- ${!!OAUTH_HEADER}`,
+  );
+  process.exit(1);
 }
 
 /**
@@ -30,42 +32,42 @@ const AI_CLIENT = new OpenAI({
 });
 console.log("[CLIENT] New AI client initiated with specified token.");
 
-
 /*
  * Method to post message
  */
 const postMessage = async (content) => {
-  // Organizing Headers 
+  // Organizing Headers
   const myHeaders = new Headers();
   myHeaders.append("Content-Type", "application/json");
   myHeaders.append("Authorization", OAUTH_HEADER);
 
-  // Request Body 
+  // Request Body
   const requestOptions = {
     method: "POST",
     headers: myHeaders,
     body: JSON.stringify({
-      "text": content.toString()
+      text: content.toString(),
     }),
-    redirect: "follow"
+    redirect: "follow",
   };
 
-  // Posting Data 
+  // Posting Data
   fetch("https://api.twitter.com/2/tweets", requestOptions)
     .then((response) => response.text())
-    .then((e) => console.log(
-      `[POST] Result during executing "postMessage" func:-\n ${e}`,
-    ),)
-    .catch((e) => console.log(
-      `[ERROR] An error occured during executing "postMessage" func:-\n ${e}`,
-    ));
+    .then((e) =>
+      console.log(`[POST] Result during executing "postMessage" func:-\n ${e}`),
+    )
+    .catch((e) =>
+      console.log(
+        `[ERROR] An error occured during executing "postMessage" func:-\n ${e}`,
+      ),
+    );
 };
 
 /**
  * Fetched post content with llm
  */
 const getPostContent = async () => {
-
   /**
    * Fetching completion
    */
