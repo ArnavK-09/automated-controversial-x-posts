@@ -34,6 +34,12 @@ AI_API_KEY="<obtained from MDB.AI dashboard>"
 OAUTH_HEADER="<follow steps below to obtain>"
 ```
 
+<p align="center">
+    <img src="assets/github_secrets.jpeg" alt="GitHub secrets" />
+</p>
+
+
+
 ### 🍎 Obtaining Environment Variables
 
 ##### 1. **API Key from MindsDB:**
