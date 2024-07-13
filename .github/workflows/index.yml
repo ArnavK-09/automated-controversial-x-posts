@@ -2,9 +2,6 @@ name: "🦅 Post content!"
 
 on:
   workflow_dispatch:
-  schedule:
-    # Runs every 2 days
-    - cron: "0 0 */2 * *"
 
 jobs:
   run-node-script:
